@@ -1,5 +1,15 @@
 <template>
   <div class="container">
+    <h1>Notes</h1>
+    <b-alert
+      :show="dismissCountDown"
+      dismissible
+      :variant="message.color"
+      @dismissed="dismissCountDown = 0"
+      @dismiss-count-down="countDownChanged"
+    >
+      {{ message.text }}
+    </b-alert>
     <table class="table">
       <thead>
         <tr>
@@ -36,24 +46,38 @@
 
 <script>
 export default {
-    data() {
-        return {
-            notes: []
-        }
+  data() {
+    return {
+      notes: [],
+      message: { color: "danger", text: "" },
+      dismissSecs: 5,
+      dismissCountDown: 0,
+    };
+  },
+  created() {
+    this.getNotes();
+  },
+  methods: {
+    getNotes() {
+      this.axios
+        .get("/allnotes")
+        .then((res) => {
+          this.notes = res.data;
+        })
+        .catch((err) => {
+          console.log(err.response);
+        });
     },
-    created() {
-        this.getNotes()
+    countDownChanged(dismissCountDown) {
+      this.dismissCountDown = dismissCountDown;
     },
-    methods:  {
-        getNotes() {
-            this.axios.get('/allnotes')
-            .then(res => {
-                this.notes = res.data
-            })
-            .catch(err => {
-                console.log(err.response)
-            })
-        }
-    }
-}
+    showAlert() {
+      this.dismissCountDown = this.dismissSecs;
+    },
+    alertText(text) {
+      this.message.text = text;
+      this.showAlert();
+    },
+  },
+};
 </script>
