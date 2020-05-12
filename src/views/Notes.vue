@@ -11,10 +11,22 @@
       {{ message.text }}
     </b-alert>
     <form @submit.prevent="addNote()">
-        <h3>Add new note</h3>
-        <input type="text" class="form-control my-2" placeholder="Name" v-model="note.name">
-        <input type="text" class="form-control my-2" placeholder="Description" v-model="note.description">
-        <b-button class="btn-success my-2 btn-block" type="submit">Add Note</b-button>
+      <h3>Add new note</h3>
+      <input
+        type="text"
+        class="form-control my-2"
+        placeholder="Name"
+        v-model="note.name"
+      />
+      <input
+        type="text"
+        class="form-control my-2"
+        placeholder="Description"
+        v-model="note.description"
+      />
+      <b-button class="btn-success my-2 btn-block" type="submit"
+        >Add Note</b-button
+      >
     </form>
     <table class="table">
       <thead>
@@ -58,7 +70,7 @@ export default {
       message: { color: "", text: "" },
       dismissSecs: 5,
       dismissCountDown: 0,
-      note: { name: "", description: "" }
+      note: { name: "", description: "" },
     };
   },
   created() {
@@ -87,16 +99,30 @@ export default {
       this.showAlert();
     },
     addNote() {
-        this.axios.post('/newnote', this.note)
-        .then(res => {
-            this.notes.push(res.data);
-            this.alertText("Created new note!", "success")
+      this.axios
+        .post("/newnote", this.note)
+        .then((res) => {
+          this.notes.push(res.data);
+          this.alertText("Created new note!", "success");
         })
-        .catch(err => {
-            console.log(err.response.data)
-            this.alertText(err.response.data.message, "danger")
+        .catch((err) => {
+          console.log(err.response.data);
+          this.alertText(err.response.data.message, "danger");
+        });
+    },
+    removeNote(id) {
+      this.axios
+        .delete(`/note/${id}`)
+        .then((res) => {
+            const index = this.notes.findIndex(el => el._id === res.data._id);
+            this.notes.splice(index, 1);
+            this.alertText("Deleted note!", "success");
         })
-    }
+        .catch((err) => {
+          console.log(err.response.data);
+          this.alertText(err.response.data.message, "danger");
+        });
+    },
   },
 };
 </script>
