@@ -47,7 +47,7 @@
           <td>
             <b-button
               class="btn-warning btn-sm mx-2"
-              @click="activateEdition(item._id)"
+              @click="updateNote(item._id)"
               >Actualizar</b-button
             >
             <b-button
@@ -114,10 +114,19 @@ export default {
       this.axios
         .delete(`/note/${id}`)
         .then((res) => {
-            const index = this.notes.findIndex(el => el._id === res.data._id);
-            this.notes.splice(index, 1);
-            this.alertText("Deleted note!", "success");
+          const index = this.notes.findIndex((el) => el._id === res.data._id);
+          this.notes.splice(index, 1);
+          this.alertText("Deleted note!", "success");
         })
+        .catch((err) => {
+          console.log(err.response.data);
+          this.alertText(err.response.data.message, "danger");
+        });
+    },
+    updateNote(id) {
+      this.axios
+        .put("/note")
+        .then((res) => {})
         .catch((err) => {
           console.log(err.response.data);
           this.alertText(err.response.data.message, "danger");
